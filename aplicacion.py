@@ -8,7 +8,7 @@ app = Wsgiclass()
 def home(request, response):
     # response.text = "<h3>Pagina Home</h3>"
     response.text = app.template(
-    "home.html", context={"title": "Pagina Principal", "user": "Pepe Sanchez"})
+    "home.html", context={"titulo": "Pagina Principal", "usuario": "Pepe Sanchez"})
 
 @app.ruta("/otra")
 def otra(request, response):
@@ -17,3 +17,7 @@ def otra(request, response):
 @app.ruta("/ultima")
 def ultima(request, response):
     response.text = "Ultima Pagina"
+
+@app.ruta("/saludo/{nombre}")
+def saludo(request, response, nombre):
+	response.text = f"Hola, {nombre}"
