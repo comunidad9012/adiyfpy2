@@ -1,21 +1,28 @@
 # api Wsgi con server wsgi
+from typing import Any
 from webob import Request, Response
 from jinja2 import Environment, FileSystemLoader
 from parse import parse
+from whitenoise import WhiteNoise
 
 class Wsgiclass:
-
     def __call__(self, environ, start_response):
+        #return self.wsgi_app(environ, start_response)
+        return self.whitenoise(environ, start_response)
+        
+    def wsgi_app(self, environ, start_response):
         request = Request(environ)
-        response = self.controlador_request(request)
+        response = self.solicitud_de_controlador(request)
         return response(environ, start_response)
 
-    def __init__(self, templates_dir="templates"):
+    def __init__(self, templates_dir="templates", estaticos_dir="estaticos"):
         self.dic_de_rutas = {}
         
         self.templates_env = Environment(
             loader = FileSystemLoader(templates_dir)
         )
+
+        self.whitenoise = WhiteNoise(self.wsgi_app, root=estaticos_dir)
     
     def template(self, template_nombre, context=None):
         if context is None:
@@ -36,7 +43,7 @@ class Wsgiclass:
         return None, None
 
         
-    def controlador_request(self, request):
+    def solicitud_de_controlador(self, request):
         response = Response()
         controlador, kwargs = self.busca_controlador(request_path=request.path)
         if controlador is not None:
